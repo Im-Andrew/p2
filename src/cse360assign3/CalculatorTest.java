@@ -1,4 +1,4 @@
-package cse360assign2;
+package cse360assign3;
 
 import static org.junit.jupiter.api.Assertions.*;
 
