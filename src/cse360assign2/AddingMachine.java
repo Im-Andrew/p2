@@ -26,23 +26,23 @@ public class AddingMachine {
 	/**
 	 * An interface used to describe an equation operation.
 	 */
-	private interface Operation {
+	static protected interface Operation {
 		/**
 		 * Executes this operation over the existing results.
 		 * @param over the results as of yet.
 		 */
-		abstract public int execute(int over);
+		public int execute(int over);
 		/**
 		 * return this operations string according to its place.
 		 * @return
 		 */
-		abstract public String toString();
+		public String toString();
 	}
 	
 	/**
 	 * A class which defines the adding operation.
 	 */
-	static private class OpAdd implements Operation {
+	static protected class OpAdd implements Operation {
 		int val;
 		boolean start;
 		public OpAdd(int val, boolean start) { 
@@ -59,9 +59,8 @@ public class AddingMachine {
 	
 	/**
 	 * The class which defines the subtraction operation.
-	 *
 	 */
-	static private class OpSubtract implements Operation {
+	static protected class OpSubtract implements Operation {
 		int val;
 		boolean start;
 		
@@ -71,7 +70,7 @@ public class AddingMachine {
 		}
 		
 		public int execute(int over) {
-			return val - over;
+			return over - val;
 		}
 		
 		public String toString() {
@@ -82,20 +81,25 @@ public class AddingMachine {
 	/**
 	 * Class used for building an operation
 	 */
-	private static class OpFactory {
+	protected static class OpFactory {
 		/**
 		 * Builds an operation given a value and first flag.
 		 * @param value operation value
 		 * @param first flag for first operation in equation
 		 */
-		static Operation createOperation(int value, boolean first, boolean negative) {
-			if (!negative && value < 0 || negative && value <= 0) 
-				return new OpSubtract(Math.abs(value), first);
-			return new OpAdd(Math.abs(value), first);
+		static Operation createOperation(int val, boolean first, boolean neg) {
+			Operation op;
+			// If adding and is negative or negative 
+			if ((!neg && val < 0) || (neg && val >= 0)) {
+				op = new OpSubtract(Math.abs(val), first);
+			} else {				
+				op = new OpAdd(Math.abs(val), first);
+			}
+			return op;
 		}
 	}
 	
-	private ArrayList<Operation> operations;
+	protected ArrayList<Operation> operations;
 	
 	/**
 	 * Constructor for the adding machine.
@@ -109,9 +113,9 @@ public class AddingMachine {
 	 * @return final computation
 	 */
 	public int getTotal() {
-		int sum = 0;
-		for(Operation op : operations) sum = op.execute(sum);
-		return sum;
+		int eqVal = 0;
+		for(Operation op : operations) eqVal = op.execute(eqVal);
+		return eqVal;
 	}
 	
 	/**
@@ -127,7 +131,7 @@ public class AddingMachine {
 	 * @param value number to subtract.
 	 */
 	public void subtract (int value) {
-		operations.add( OpFactory.createOperation(-value, operations.isEmpty(), true) );
+		operations.add( OpFactory.createOperation(value, operations.isEmpty(), true) );
 	}
 		
 	/**
